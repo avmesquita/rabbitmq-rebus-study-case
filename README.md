@@ -121,11 +121,11 @@ graph TD
 
 ### 2. A Tabela rebus_sagas (o Storage do Rebus)
 * **Onde fica**: No PostgreSQL.Como funciona: Guarda apenas os dados de negócio necessários para a saga lembrar onde parou (ex: {"Status": "aguardando pagamento", "OrderId": 123}).
-* **O que acontece no erro**: Se a mensagem estoura o limite de erros e vai para a fila de **error**, a transação no banco sofre Rollback. A tabela **rebus_sagas** continua com a foto do último estado válido e não é alterada.
+* **O que acontece no erro**: Se a mensagem estoura o limite de erros e vai para a fila de `error`, a transação no banco sofre Rollback. A tabela `rebus_sagas` continua com a foto do último estado válido e não é alterada.
 
 ### Resumo do Comportamento
-* A fila de **error** é o cemitério de mensagens (Dead Letter Queue) mantido no Broker.
-* A tabela **rebus_sagas** é o bloco de notas do estado mantido no Banco.
+* A fila de `error` é o cemitério de mensagens (Dead Letter Queue) mantido no Broker.
+* A tabela `rebus_sagas` é o bloco de notas do estado mantido no Banco.
 
 Se a sua mensagem foi parar na fila de error, você precisa ir no painel do seu broker (ou via CLI/Rebus Fleet Manager) para inspecionar o payload e o stack trace do erro gravado nos cabeçalhos (headers) dessa mensagem.
 
