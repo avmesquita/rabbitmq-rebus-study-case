@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.86" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+    <PackageReference Include="Rebus" Version="8.9.4" />
+    <PackageReference Include="Rebus.PostgreSql" Version="9.1.1" />
+    <PackageReference Include="Rebus.RabbitMq" Version="10.1.1" />
+    <PackageReference Include="Rebus.ServiceProvider" Version="10.7.2" />
+  </ItemGroup>
+
+</Project>

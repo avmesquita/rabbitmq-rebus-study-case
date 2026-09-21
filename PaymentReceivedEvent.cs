@@ -1,0 +1,1 @@
+public record PaymentReceivedEvent(Guid OrderId);
