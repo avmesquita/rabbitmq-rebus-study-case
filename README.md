@@ -30,7 +30,7 @@ Aqui está o fluxo completo, ponta a ponta:
                                                               │
                                                               │ 4. Aguarda evento externo
                                                               ▼
- ┌───────────┐       5. Envia PaymentApprovedEvent    ┌───────────────┐
+ ┌───────────┐       5. Envia PaymentReceivedEvent    ┌───────────────┐
  │   Fila    ├───────────────────────────────────────►│  OrderSaga    │
  └───────────┘                                        └───────┬───────┘
                                                               │
@@ -68,7 +68,7 @@ sequenceDiagram
 
     Note over Fila,Saga: 4. Aguarda evento externo
 
-    Fila->>Saga: Envia PaymentApprovedEvent
+    Fila->>Saga: Envia PaymentReceivedEvent
     Saga->>Banco: Reidrata estado pelo CorrelationID
     Note over Saga,Banco: Status: "pago"
     Saga->>Banco: Atualiza estado no Postgres
@@ -85,7 +85,7 @@ graph TD
     C -->|3. Instancia & Grava Estado Inicial| D[(rebus_sagas - Postgres<br/>Status: 'aguardando pagamento')]
     
     D -->|4. Aguarda evento externo| E(Fila)
-    E -->|5. Envia PaymentApprovedEvent| F[OrderSaga]
+    E -->|5. Envia PaymentReceivedEvent| F[OrderSaga]
     
     F -->|6. Reidrata estado pelo CorrelationID<br/>& Atualiza no Postgres| G[(rebus_sagas - Postgres<br/>Status: 'pago')]
     
@@ -104,8 +104,8 @@ graph TD
 * A mensagem inicial já foi processada e removida da fila.
 * O sistema não gasta CPU nem conexões. A ordem está em descanso dentro da tabela `rebus_sagas`.
 
-### 3. Reidratação e Avanço (`IHandleMessages<PaymentApprovedEvent>`)
-* **O que acontece:** Horas ou segundos depois, o gateway envia um webhook e sua aplicação joga o evento `PaymentApprovedEvent` na fila.
+### 3. Reidratação e Avanço (`IHandleMessages<PaymentReceivedEvent>`)
+* **O que acontece:** Horas ou segundos depois, o gateway envia um webhook e sua aplicação joga o evento `PaymentReceivedEvent` na fila.
 * **O Rebus faz:** 
   1. Lê a mensagem e pega o `OrderId`.
   2. Vai até a tabela `rebus_sagas`, busca a linha correlacionada a esse `OrderId`.
