@@ -7,7 +7,7 @@ using Rebus.Config;
 using Rebus.Routing.TypeBased;
 using System.Data;
 using StudyCase.Worker.Orders;
-using StudyCase.Domain.Orders;
+using StudyCase.Domain;
 using StudyCase.Contracts;
 
 

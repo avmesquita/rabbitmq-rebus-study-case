@@ -1,4 +1,4 @@
-namespace StudyCase.Domain.Orders;
+namespace StudyCase.Domain;
 
 public sealed class Order
 {

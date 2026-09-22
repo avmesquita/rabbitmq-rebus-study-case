@@ -1,7 +1,7 @@
 using Dapper;
 using Rebus.Handlers;
 using Rebus.Sagas;
-using StudyCase.Domain.Orders;
+using StudyCase.Domain;
 using StudyCase.Contracts;
 using System.Data;
 

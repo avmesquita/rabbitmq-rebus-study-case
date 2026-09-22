@@ -1,10 +1,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY api/src/Api.csproj api/src/
-COPY shared/Contracts/Contracts.csproj shared/Contracts/
+COPY shared/StudyCase.Contracts/StudyCase.Contracts.csproj shared/StudyCase.Contracts/
+COPY shared/StudyCase.Domain/StudyCase.Domain.csproj shared/StudyCase.Domain/
 RUN dotnet restore api/src/Api.csproj
 COPY api/src/ api/src/
-COPY shared/Contracts/ shared/Contracts/
+
+RUN dotnet restore api/src/Api.csproj
+
+COPY shared/StudyCase.Contracts/ shared/StudyCase.Contracts/
+COPY shared/StudyCase.Domain/ shared/StudyCase.Domain/
+
 RUN dotnet publish api/src/Api.csproj -c Release -o /app/publish --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0

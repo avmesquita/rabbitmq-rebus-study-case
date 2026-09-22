@@ -1,7 +1,7 @@
 using Rebus.Config;
 using Rebus.Bus;
 using Rebus.Routing.TypeBased;
-using StudyCase.Domain.Orders;
+using StudyCase.Domain;
 using StudyCase.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);

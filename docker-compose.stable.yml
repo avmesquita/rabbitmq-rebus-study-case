@@ -1,0 +1,86 @@
+# Docker Compose file for Rebus RabbitMQ Study Case
+
+services:
+
+  # ─── Banco de dados ────────────────────────────────────────────────────────
+  rebus_postgres:
+    image: postgres:16-alpine    
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-teams}
+      POSTGRES_PASSWORD: ${DB_PASS:-teams}
+      POSTGRES_DB: ${DB_NAME:-rebus}
+    volumes:
+      - rebus_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rebus_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-teams} -d ${DB_NAME:-rebus}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ─── RabbitMQ ─────────────────────────────────────────────────────────────
+  rebus_rabbitmq:
+    image: rabbitmq:3-management    
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rebus_rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - rebus_net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API HTTP que publica os eventos de negócio no Rebus.
+  rebus_api:
+    image: avmesquita/rebus-api:latest
+    restart: unless-stopped
+    depends_on:
+      rebus_rabbitmq:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_HTTP_PORTS: 8080
+      RABBITMQ_HOST: rebus_rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+    ports:
+      - "${API_PORT:-8081}:8080"
+    networks:
+      - rebus_net
+
+  # ─── Worker .NET 10 ────────────────────────────────────────────────────────
+  rebus_worker:
+    image: avmesquita/rebus-worker:latest
+    restart: unless-stopped
+    depends_on:
+      rebus_postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: rebus_postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-teams}
+      DB_PASS: ${DB_PASS:-teams}
+      DB_NAME: ${DB_NAME:-rebus}      
+      RABBITMQ_HOST: rebus_rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}      
+    networks:
+      - rebus_net
+
+# Persistência de dados
+volumes:
+  rebus_data:
+  rebus_rabbitmq_data:
+
+# Infraestrutura de rede
+networks:
+  rebus_net:
+    driver: bridge

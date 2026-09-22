@@ -172,3 +172,4 @@ funcionar e mantém seus dados no volume `rebus_docker_data`.
 
 A API fica disponível em `http://localhost:8081` por padrão. Para alterar a
 porta publicada, use `API_PORT`.
+
