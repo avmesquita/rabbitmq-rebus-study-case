@@ -1,0 +1,40 @@
+{
+  "name": "RabbitMQ Rebus Study Case",
+  "build": {
+    "context": "..",
+    "dockerfile": "dev-env/Dockerfile"
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "ubuntu",
+  "overrideCommand": true,
+  "runArgs": [
+    "--privileged"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
+    }
+  },
+  "forwardPorts": [
+    8081,
+    8443,
+    15672
+  ],
+  "portsAttributes": {
+    "8081": {
+      "label": "Study Case API",
+      "onAutoForward": "notify"
+    },
+    "8443": {
+      "label": "Browser VS Code",
+      "onAutoForward": "notify"
+    },
+    "15672": {
+      "label": "RabbitMQ Management",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "dotnet restore api/src/Api.csproj && dotnet restore worker/src/RebusExemplo.csproj"
+}

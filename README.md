@@ -177,3 +177,19 @@ funcionar e mantém seus dados no volume `rebus_docker_data`.
 A API fica disponível em `http://localhost:8081` por padrão. Para alterar a
 porta publicada, use `API_PORT`.
 
+### Ambiente remoto de desenvolvimento
+
+O projeto também possui uma configuração Dev Container compatível com GitHub
+Codespaces, Gitpod, DevPod, Coder e ambientes equivalentes em Azure, AWS ou
+Google Cloud.
+
+[![Abrir no GitHub Codespaces](https://img.shields.io/badge/Abrir%20no-GitHub%20Codespaces-181717?logo=github)](https://codespaces.new/avmesquita/rabbitmq-rebus-study-case?quickstart=1)
+
+Após abrir o ambiente remoto, inicie a infraestrutura com:
+
+```bash
+docker compose up -d --build
+```
+
+Mais detalhes estão em [`.devcontainer/README.md`](.devcontainer/README.md).
+
