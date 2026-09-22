@@ -24,4 +24,4 @@ WORKDIR /workspace
 
 EXPOSE 8080
 
-ENTRYPOINT ["/usr/local/bin/dev-env-entrypoint"]
+CMD ["/usr/local/bin/dev-env-entrypoint"]
