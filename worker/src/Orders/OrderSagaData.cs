@@ -1,6 +1,6 @@
 using Rebus.Sagas;
 
-namespace RebusExemplo.Orders;
+namespace StudyCase.Worker.Orders;
 public class OrderSagaData : ISagaData
 {
     public Guid Id { get; set; }          // Chave interna do Rebus

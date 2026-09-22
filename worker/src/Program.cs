@@ -1,15 +1,15 @@
 ﻿using Dapper;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
 using Rebus.Bus;
 using Rebus.Config;
-using Rebus.PostgreSql.Sagas;
 using Rebus.Routing.TypeBased;
-using Rebus.ServiceProvider;
 using System.Data;
-using RebusExemplo.Orders;
+using StudyCase.Worker.Orders;
+using StudyCase.Domain.Orders;
+using StudyCase.Contracts;
+
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -31,7 +31,7 @@ var rabbitConnectionString = $"amqp://{Environment.GetEnvironmentVariable("RABBI
 builder.Services.AddScoped<IDbConnection>(sp => new NpgsqlConnection(connectionString));
 #endregion
 
-#region [ Registra o Rebus e a Saga (evita duplicar com o OrderCreatedHandler) ]
+#region [ Registra o Rebus e a Saga ]
 builder.Services.AutoRegisterHandlersFromAssemblyOf<OrderSaga>();
 #endregion
 
@@ -63,12 +63,13 @@ await host.StartAsync();
 
 var bus = host.Services.GetRequiredService<IBus>();
 
-/* 
-    Dispara o teste da saga 
-*/
+#region Test (Dispara o teste da saga) | DevDebugOption
+/*
 await TestSagaAsync(bus);
-
 Console.WriteLine("Serviço rodando. Verifique a tabela 'rebus_sagas' no Postgres!");
+*/
+#endregion
+
 Console.WriteLine("Pressione CTRL+C para fechar.");
 
 // Bloqueia a execução e mantém escutando
@@ -87,19 +88,13 @@ static async Task EnsureDatabaseCreatedAsync(string connectionString)
             email_cliente VARCHAR(255) NOT NULL,
             criado_em TIMESTAMPTZ NOT NULL
         );
-
-        CREATE TABLE IF NOT EXISTS rebus_saga_indexes (
-            saga_id UUID NOT NULL,
-            key VARCHAR(255) NOT NULL,
-            value VARCHAR(255) NOT NULL,
-            PRIMARY KEY (saga_id, key, value),
-            FOREIGN KEY (saga_id) REFERENCES rebus_sagas(id) ON DELETE CASCADE
-        );
     ";
 
     await db.ExecuteAsync(sql);
 }
 
+#region DevDebugOption
+/*
 static async Task TestSagaAsync(IBus bus)
 {
     var orderId = Guid.NewGuid();
@@ -108,6 +103,7 @@ static async Task TestSagaAsync(IBus bus)
     Console.WriteLine($"[TESTE] Enviando OrderCreatedEvent para OrderId: {orderId}");
     await bus.Send(orderCreatedEvent);
 }
-
+*/
 #endregion
 
+#endregion

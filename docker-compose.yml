@@ -29,12 +29,39 @@ services:
       - "15672:15672"
     volumes:
       - rebus_rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - rebus_net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API HTTP que publica os eventos de negócio no Rebus.
+  rebus_api:
+    build:
+      context: .
+      dockerfile: api/src/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      rebus_rabbitmq:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_HTTP_PORTS: 8080
+      RABBITMQ_HOST: rebus_rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+    ports:
+      - "${API_PORT:-8081}:8080"
+    networks:
+      - rebus_net
 
   # ─── Worker .NET 10 ────────────────────────────────────────────────────────
   rebus_worker:
     build:
-      context: ./worker
-      dockerfile: Dockerfile    
+      context: .
+      dockerfile: worker/src/Dockerfile
     restart: unless-stopped
     depends_on:
       rebus_postgres:
@@ -44,8 +71,7 @@ services:
       DB_PORT: 5432
       DB_USER: ${DB_USER:-teams}
       DB_PASS: ${DB_PASS:-teams}
-      DB_NAME: ${DB_NAME:-rebus}
-      WORKER_CRON: ${WORKER_CRON:-0 8 * * *}
+      DB_NAME: ${DB_NAME:-rebus}      
       RABBITMQ_HOST: rebus_rabbitmq
       RABBITMQ_PORT: 5672
       RABBITMQ_USER: ${RABBITMQ_DEFAULT_USER:-guest}

@@ -1,9 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS builder
 WORKDIR /src
-COPY RebusExemplo.csproj .
-RUN dotnet restore
-COPY . .
-RUN dotnet publish -c Release -o /app --no-restore
+COPY worker/src/RebusExemplo.csproj worker/src/
+COPY shared/Contracts/Contracts.csproj shared/Contracts/
+RUN dotnet restore worker/src/RebusExemplo.csproj
+COPY worker/src/ worker/src/
+COPY shared/Contracts/ shared/Contracts/
+RUN dotnet publish worker/src/RebusExemplo.csproj -c Release -o /app --no-restore
 
 # Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:10.0

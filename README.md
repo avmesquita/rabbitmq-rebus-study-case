@@ -136,6 +136,11 @@ Se a sua mensagem foi parar na fila de error, você precisa ir no painel do seu 
 
 ## Execução
 
+### Pré-requisitos
+
+- Docker instalado e em execução
+- Docker Compose v2
+
 ```bash
 git clone https://github.com/avmesquita/rabbitmq-rebus-study-case.git
 cd rabbitmq-rebus-study-case
@@ -143,4 +148,27 @@ chmod +x start.sh
 ./start.sh
 ```
 
+### Ambiente de desenvolvimento no VS Code
 
+O ambiente de desenvolvimento roda o VS Code no navegador com .NET 10 SDK e
+um daemon Docker isolado. A pasta raiz do repositório é aberta como `/workspace`.
+
+Suba primeiro a infraestrutura e depois o ambiente de desenvolvimento:
+
+```bash
+docker compose up -d --build
+docker compose --project-directory . -f dev-env/docker-compose.development.yml up -d --build
+```
+
+Abra `http://localhost:8443` e use a senha definida em `VSCODE_PASSWORD`
+(o padrão é `devcontainer`). Para alterar a porta, use `VSCODE_PORT`.
+Na primeira inicialização, o ambiente clona `REPOSITORY_URL` na referência
+`REPOSITORY_REF` (por padrão, o repositório público e a branch `main`) para o
+volume persistente `rebus_workspace`.
+
+O serviço `vscode` acessa apenas o daemon Docker `docker` do compose, sem usar
+o socket Docker do host. O serviço Docker-in-Docker requer `privileged` para
+funcionar e mantém seus dados no volume `rebus_docker_data`.
+
+A API fica disponível em `http://localhost:8081` por padrão. Para alterar a
+porta publicada, use `API_PORT`.

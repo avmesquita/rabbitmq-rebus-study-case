@@ -1,9 +1,11 @@
 using Dapper;
 using Rebus.Handlers;
 using Rebus.Sagas;
+using StudyCase.Domain.Orders;
+using StudyCase.Contracts;
 using System.Data;
 
-namespace RebusExemplo.Orders;
+namespace StudyCase.Worker.Orders;
 public class OrderSaga : Saga<OrderSagaData>,
     IAmInitiatedBy<OrderCreatedEvent>,
     IHandleMessages<PaymentReceivedEvent>
@@ -41,7 +43,14 @@ public class OrderSaga : Saga<OrderSagaData>,
             DO UPDATE SET valor = EXCLUDED.valor;        
         */
 
-        await _db.ExecuteAsync(sql, message);
+        var order = new Order(message.OrderId, message.Value, message.CustomerEmail);
+        await _db.ExecuteAsync(sql, new
+        {
+            OrderId = order.Id,
+            order.Value,
+            order.CustomerEmail,
+            order.CreatedAt
+        });
 
         Console.WriteLine($"[SAGA] Pedido {message.OrderId} gravado na tabela 'pedidos' e aguardando pagamento na 'rebus_sagas'!");
     }
