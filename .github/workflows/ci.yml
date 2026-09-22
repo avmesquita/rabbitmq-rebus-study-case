@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "**"
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dotnet:
+    name: Build .NET projects
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore API
+        run: dotnet restore api/src/Api.csproj
+
+      - name: Restore worker
+        run: dotnet restore worker/src/RebusExemplo.csproj
+
+      - name: Build API
+        run: dotnet build api/src/Api.csproj --configuration Release --no-restore
+
+      - name: Build worker
+        run: dotnet build worker/src/RebusExemplo.csproj --configuration Release --no-restore
+
+  docker-images:
+    name: Build application images
+    runs-on: ubuntu-latest
+    needs: dotnet
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: api/src/Dockerfile
+          push: false
+          tags: rebus-api:ci
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+      - name: Build worker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: worker/src/Dockerfile
+          push: false
+          tags: rebus-worker:ci
+          cache-from: type=gha,scope=worker
+          cache-to: type=gha,mode=max,scope=worker
+
+  compose:
+    name: Validate Compose environments
+    runs-on: ubuntu-latest
+    needs: dotnet
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate local Compose
+        run: docker compose -f docker-compose.yml config --quiet
+
+      - name: Validate stable Compose
+        run: docker compose -f docker-compose.stable.yml config --quiet
+
+      - name: Validate development Compose
+        run: docker compose --project-directory . -f dev-env/docker-compose.development.yml config --quiet
+
+      - name: Build development environment image
+        run: docker compose --project-directory . -f dev-env/docker-compose.development.yml build vscode
