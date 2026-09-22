@@ -4,8 +4,6 @@
     "context": "..",
     "dockerfile": "dev-env/Dockerfile"
   },
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-  "workspaceFolder": "/workspace",
   "remoteUser": "ubuntu",
   "overrideCommand": true,
   "runArgs": [

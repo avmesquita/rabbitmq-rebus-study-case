@@ -167,7 +167,8 @@ docker compose up -d --build
 ### Ambiente de desenvolvimento isolado no VS Code
 
 O ambiente de desenvolvimento roda o VS Code no navegador com .NET 10 SDK e
-um daemon Docker isolado. A pasta raiz do repositório é aberta como `/workspace`.
+um daemon Docker isolado. No Compose local, a pasta raiz é aberta como `/workspace`;
+no GitHub Codespaces, o checkout usa o caminho padrão `/workspaces/rabbitmq-rebus-study-case`.
 
 Suba primeiro a infraestrutura e depois o ambiente de desenvolvimento:
 
