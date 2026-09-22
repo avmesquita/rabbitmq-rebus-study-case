@@ -1,6 +1,10 @@
 # Casos de Estudo RabbitMQ/Rebus
 
-## Fluxo
+## Abstract
+
+Este projeto apresenta um estudo prático da integração entre RabbitMQ e Rebus em uma arquitetura orientada a eventos. O exemplo utiliza uma saga de pedidos para demonstrar o processamento assíncrono de mensagens, a correlação entre eventos, a persistência e a reidratação do estado no PostgreSQL, além do tratamento de falhas e do encaminhamento de mensagens para a fila de erro. O objetivo é tornar visíveis os principais conceitos e decisões envolvidos na implementação de processos distribuídos e de longa duração com .NET.
+
+## Fluxo Saga
 
 Em arquiteturas orientadas a eventos usando Rebus com Sagas, a saga funciona como um Orquestrador de Estado Persistente. Ela é uma máquina de estados que reage a mensagens da fila, grava o progresso no banco e decide o que fazer a seguir.
 
@@ -72,7 +76,7 @@ sequenceDiagram
     Saga->>Banco: MarkAsComplete() (Deleta linha)
 ```    
 
-## Diagrama Top-Down
+### Diagrama Top-Down
 
 ```mermaid
 graph TD
@@ -128,4 +132,44 @@ graph TD
 * A tabela `rebus_sagas` é o bloco de notas do estado mantido no Banco.
 
 Se a sua mensagem foi parar na fila de error, você precisa ir no painel do seu broker (ou via CLI/Rebus Fleet Manager) para inspecionar o payload e o stack trace do erro gravado nos cabeçalhos (headers) dessa mensagem.
+
+
+## Execução
+
+### Pré-requisitos
+
+- Docker instalado e em execução
+- Docker Compose v2
+
+```bash
+git clone https://github.com/avmesquita/rabbitmq-rebus-study-case.git
+cd rabbitmq-rebus-study-case
+chmod +x start.sh
+./start.sh
+```
+
+### Ambiente de desenvolvimento no VS Code
+
+O ambiente de desenvolvimento roda o VS Code no navegador com .NET 10 SDK e
+um daemon Docker isolado. A pasta raiz do repositório é aberta como `/workspace`.
+
+Suba primeiro a infraestrutura e depois o ambiente de desenvolvimento:
+
+```bash
+docker compose up -d --build
+docker compose --project-directory . -f dev-env/docker-compose.development.yml up -d --build
+```
+
+Abra `http://localhost:8443` e use a senha definida em `VSCODE_PASSWORD`
+(o padrão é `devcontainer`). Para alterar a porta, use `VSCODE_PORT`.
+Na primeira inicialização, o ambiente clona `REPOSITORY_URL` na referência
+`REPOSITORY_REF` (por padrão, o repositório público e a branch `main`) para o
+volume persistente `rebus_workspace`.
+
+O serviço `vscode` acessa apenas o daemon Docker `docker` do compose, sem usar
+o socket Docker do host. O serviço Docker-in-Docker requer `privileged` para
+funcionar e mantém seus dados no volume `rebus_docker_data`.
+
+A API fica disponível em `http://localhost:8081` por padrão. Para alterar a
+porta publicada, use `API_PORT`.
 

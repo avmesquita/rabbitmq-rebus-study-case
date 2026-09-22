@@ -1,0 +1,56 @@
+services:
+  # VS Code acessível pelo navegador, com o repositório clonado no volume.
+  vscode:
+    build:
+      context: .
+      dockerfile: dev-env/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      docker:
+        condition: service_healthy
+    environment:
+      PASSWORD: ${VSCODE_PASSWORD:-devcontainer}
+      REPOSITORY_URL: ${REPOSITORY_URL:-https://github.com/avmesquita/rabbitmq-rebus-study-case.git}
+      REPOSITORY_REF: ${REPOSITORY_REF:-main}
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: "1"
+    ports:
+      - "${VSCODE_PORT:-8443}:8080"
+    volumes:
+      - rebus_workspace:/workspace
+      - rebus_nuget_cache:/home/ubuntu/.nuget/packages
+      - docker_certs:/certs/client:ro
+    networks:
+      - rebus_net
+      - rebus_dev_net
+
+  # Daemon Docker isolado do host para uso dentro do workspace.
+  docker:
+    image: docker:27-dind
+    privileged: true
+    restart: unless-stopped
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+    volumes:
+      - docker_certs:/certs/client
+      - rebus_docker_data:/var/lib/docker
+    networks:
+      - rebus_dev_net
+    healthcheck:
+      test: ["CMD", "docker", "info"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  rebus_workspace:
+  rebus_nuget_cache:
+  docker_certs:
+  rebus_docker_data:
+
+networks:
+  rebus_net:
+    driver: bridge
+  rebus_dev_net:
+    driver: bridge
