@@ -17,7 +17,8 @@ builder.Services.AddRebus((configure, _) => configure
     .Transport(transport => transport.UseRabbitMq(rabbitConnectionString, "api-queue"))
     .Routing(routing => routing.TypeBased()
         .Map<OrderCreatedEvent>("pedidos-queue")
-        .Map<PaymentReceivedEvent>("pedidos-queue")));
+        .Map<PaymentReceivedEvent>("pedidos-queue")
+        .Map<OrderNotificationRequested>("mailer-queue")));
 
 var app = builder.Build();
 
@@ -42,6 +43,7 @@ app.MapPost("/orders", async (CreateOrderRequest request, IBus bus, Cancellation
 
     var order = new Order(Guid.NewGuid(), request.Value, request.CustomerEmail);
     await bus.Send(new OrderCreatedEvent(order.Id, order.Value, order.CustomerEmail));
+    await bus.Send(new OrderNotificationRequested(order.Id, order.CustomerEmail, order.Value));
 
     return Results.Accepted($"/orders/{order.Id}", new
     {

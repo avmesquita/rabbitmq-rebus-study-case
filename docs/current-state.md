@@ -10,6 +10,7 @@ Demonstrar um fluxo de pedidos orientado a eventos usando API .NET 10, RabbitMQ,
 | --- | --- |
 | `api/src` | Recebe chamadas HTTP e publica eventos de negócio. |
 | `worker/src` | Consome eventos e executa `OrderSaga`. |
+| `mailer/src` | Executa ciclos agendados de notificações. |
 | `shared/StudyCase.Contracts` | Define os eventos compartilhados. |
 | `shared/StudyCase.Domain` | Define a entidade `Order`. |
 | PostgreSQL | Armazena pedidos e estado persistido das sagas. |
@@ -36,6 +37,10 @@ Cliente
   -> RabbitMQ: PaymentReceivedEvent
   -> Worker: OrderSaga correlacionada por OrderId
   -> Rebus: MarkAsComplete()
+
+Mailer
+  -> RabbitMQ: consome OrderNotificationRequested em mailer-queue
+  -> PostgreSQL: registra a notificação de forma idempotente
 ```
 
 ## Ambientes
@@ -67,6 +72,7 @@ docker compose -f docker-compose.stable.yml up -d
 - A API fica na porta `8081` por padrão.
 - O painel RabbitMQ fica na porta `15672`.
 - A cobertura de testes Playwright ainda é inicial e precisa ser expandida.
+- O Mailer consome `OrderNotificationRequested` e registra notificações em `email_notifications`, mas ainda não está conectado a um provedor SMTP ou API de e-mail.
 
 ## Próximos Passos
 

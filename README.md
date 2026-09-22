@@ -192,6 +192,12 @@ funcionar e mantém seus dados no volume `rebus_docker_data`.
 A API fica disponível em `http://localhost:8081` por padrão. Para alterar a
 porta publicada, use `API_PORT`.
 
+O Mailer consome `OrderNotificationRequested` na fila `mailer-queue`. No
+primeiro corte, ele registra o processamento de forma idempotente em
+`email_notifications`; a integração com um provedor real de e-mail fica para
+uma etapa posterior. O serviço pode ser escalado com
+`docker compose up -d --build --scale rebus_mailer=3`.
+
 ## Publicação remota
 
 O projeto também possui uma configuração Dev Container compatível com GitHub

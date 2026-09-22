@@ -75,6 +75,23 @@ services:
     networks:
       - rebus_net
 
+  # Worker agendado para registrar notificações dos pedidos.
+  rebus_mailer:
+    image: avmesquita/rebus-mailer:latest
+    restart: unless-stopped
+    depends_on:
+      rebus_postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: rebus_postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-teams}
+      DB_PASS: ${DB_PASS:-teams}
+      DB_NAME: ${DB_NAME:-rebus}
+      WORKER_CRON: ${WORKER_CRON:-0 8 * * *}
+    networks:
+      - rebus_net
+
 # Persistência de dados
 volumes:
   rebus_data:

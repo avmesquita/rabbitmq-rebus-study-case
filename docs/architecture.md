@@ -10,6 +10,8 @@ flowchart LR
     Worker --> Saga[OrderSaga]
     Saga --> Orders[(PostgreSQL: pedidos)]
     Saga --> SagaData[(PostgreSQL: rebus_sagas)]
+    Mailer[Mailer Rebus consumer] --> Notifications[(PostgreSQL: email_notifications)]
+    Rabbit -->|OrderNotificationRequested| Mailer
 ```
 
 ## Dependências
@@ -20,6 +22,11 @@ api/src
   -> shared/StudyCase.Domain
 
 worker/src
+  -> shared/StudyCase.Contracts
+  -> shared/StudyCase.Domain
+  -> Rebus + RabbitMQ + PostgreSQL
+
+mailer/src
   -> shared/StudyCase.Contracts
   -> shared/StudyCase.Domain
   -> Rebus + RabbitMQ + PostgreSQL
@@ -49,6 +56,12 @@ Endpoints atuais:
 
 O worker configura transporte, roteamento, storage da saga e handlers. `OrderSaga` correlaciona ambos os eventos por `OrderId`, grava o pedido e completa a saga após o pagamento.
 
+### Mailer
+
+O Mailer é um processo independente Rebus. A API envia `OrderNotificationRequested` para `mailer-queue`, e `NotificationDispatcher` processa a mensagem e grava a notificação de forma idempotente.
+
+O dispatcher atual representa a fronteira de integração com e-mail, mas ainda registra/loga o processamento em vez de chamar SMTP ou um provedor externo. A implementação do provedor deve ficar atrás desse handler.
+
 ## Mensageria
 
 - Fila de entrada do worker: `pedidos-queue`.
@@ -61,5 +74,6 @@ O worker configura transporte, roteamento, storage da saga e handlers. `OrderSag
 - `pedidos`: dados de negócio do pedido.
 - `rebus_sagas`: estado serializado das sagas em andamento.
 - `rebus_saga_indexes`: índices de correlação do Rebus.
+- `email_notifications`: controle idempotente das notificações processadas pelo Mailer.
 
 A persistência do estado da saga não substitui a persistência do pedido. São responsabilidades distintas.

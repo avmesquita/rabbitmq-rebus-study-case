@@ -8,6 +8,7 @@ Este repositório é um estudo de caso de processamento assíncrono de pedidos c
 
 - `api/src`: API HTTP que valida pedidos e publica eventos.
 - `worker/src`: processo Rebus que consome eventos e hospeda `OrderSaga`.
+- `mailer/src`: worker agendado que processa notificações dos pedidos.
 - `shared/StudyCase.Contracts`: eventos compartilhados entre API e worker.
 - `shared/StudyCase.Domain`: entidades e regras de domínio reutilizáveis.
 - `postgres`: script de inicialização do banco.
@@ -18,6 +19,7 @@ Este repositório é um estudo de caso de processamento assíncrono de pedidos c
 ## Regras de Dependência
 
 - API e worker podem referenciar `StudyCase.Contracts` e `StudyCase.Domain`.
+- O Mailer pode referenciar `StudyCase.Domain`, mas não deve depender de tipos internos da saga.
 - Eventos de integração ficam em `StudyCase.Contracts`.
 - Entidades e regras de negócio ficam em `StudyCase.Domain`.
 - `OrderSaga` e `OrderSagaData` são detalhes do worker/Rebus e não devem ser movidos para o domínio.
@@ -31,12 +33,15 @@ Este repositório é um estudo de caso de processamento assíncrono de pedidos c
 3. A saga persiste o pedido em `pedidos` e seu estado em `rebus_sagas`.
 4. `POST /orders/{orderId}/payment` publica `PaymentReceivedEvent`.
 5. A saga correlaciona o pagamento por `OrderId` e chama `MarkAsComplete()`.
+6. A API publica `OrderNotificationRequested` em `mailer-queue`.
+7. Múltiplas instâncias do Mailer consomem a fila em paralelo e registram notificações em `email_notifications`.
 
 ## Comandos de Validação
 
 ```bash
 dotnet build api/src/Api.csproj
 dotnet build worker/src/RebusExemplo.csproj
+dotnet build mailer/src/Mailer.csproj
 docker compose up -d --build
 docker compose --project-directory . -f dev-env/docker-compose.development.yml up -d --build
 docker compose -f docker-compose.stable.yml config

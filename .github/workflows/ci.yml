@@ -33,11 +33,17 @@ jobs:
       - name: Restore worker
         run: dotnet restore worker/src/RebusExemplo.csproj
 
+      - name: Restore mailer
+        run: dotnet restore mailer/src/Mailer.csproj
+
       - name: Build API
         run: dotnet build api/src/Api.csproj --configuration Release --no-restore
 
       - name: Build worker
         run: dotnet build worker/src/RebusExemplo.csproj --configuration Release --no-restore
+
+      - name: Build mailer
+        run: dotnet build mailer/src/Mailer.csproj --configuration Release --no-restore
 
   docker-images:
     name: Build application images
@@ -69,6 +75,16 @@ jobs:
           tags: rebus-worker:ci
           cache-from: type=gha,scope=worker
           cache-to: type=gha,mode=max,scope=worker
+
+      - name: Build mailer image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: mailer/src/Dockerfile
+          push: false
+          tags: rebus-mailer:ci
+          cache-from: type=gha,scope=mailer
+          cache-to: type=gha,mode=max,scope=mailer
 
   compose:
     name: Validate Compose environments
