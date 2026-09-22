@@ -3,6 +3,11 @@
 [![CI](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/ci.yml/badge.svg)](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/ci.yml)
 [![Documentação](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/pages.yml/badge.svg)](https://avmesquita.github.io/rabbitmq-rebus-study-case/)
  [![Abrir no GitHub Codespaces](https://img.shields.io/badge/Abrir%20no-GitHub%20Codespaces-181717?logo=github)](https://codespaces.new/avmesquita/rabbitmq-rebus-study-case?quickstart=1)
+
+ [![pages-build-deployment](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/pages/pages-build-deployment)
+
+ [![Pages](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/pages.yml/badge.svg)](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/pages.yml)
+
 ---
 
 ## Abstract
@@ -164,7 +169,8 @@ docker compose up -d --build
 ### Ambiente de desenvolvimento isolado no VS Code
 
 O ambiente de desenvolvimento roda o VS Code no navegador com .NET 10 SDK e
-um daemon Docker isolado. A pasta raiz do repositório é aberta como `/workspace`.
+um daemon Docker isolado. No Compose local, a pasta raiz é aberta como `/workspace`;
+no GitHub Codespaces, o checkout usa o caminho padrão `/workspaces/rabbitmq-rebus-study-case`.
 
 Suba primeiro a infraestrutura e depois o ambiente de desenvolvimento:
 

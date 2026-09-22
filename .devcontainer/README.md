@@ -4,7 +4,7 @@ Esta configuração permite abrir o projeto em ambientes de desenvolvimento remo
 
 ## Como usar
 
-Abra o repositório no ambiente escolhido ou use o botão no README da raiz. A plataforma construirá a imagem usando `dev-env/Dockerfile`, montará o repositório em `/workspace` e instalará o suporte ao Docker-in-Docker.
+Abra o repositório no ambiente escolhido ou use o botão no README da raiz. A plataforma construirá a imagem usando `dev-env/Dockerfile`, montará o repositório no caminho padrão `/workspaces/<nome-do-repositório>` e instalará o suporte ao Docker-in-Docker.
 
 ## Portas encaminhadas
 
@@ -20,4 +20,4 @@ O Dev Container fornece o ambiente de ferramentas. PostgreSQL e RabbitMQ continu
 docker compose up -d --build
 ```
 
-O `devcontainer.json` usa o checkout fornecido pela plataforma; ele não clona o repositório novamente no volume `rebus_workspace`.
+O `devcontainer.json` usa o checkout fornecido pela plataforma; ele não clona o repositório novamente no volume `rebus_workspace`. O volume e o caminho `/workspace` pertencem somente ao Compose local em `dev-env/docker-compose.development.yml`.
