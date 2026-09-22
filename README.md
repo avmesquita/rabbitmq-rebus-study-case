@@ -2,7 +2,7 @@
 
 ## Abstract
 
-O objeto deste projeto é um estudo do uso do RabbitMQ com o Rebus.
+Este projeto apresenta um estudo prático da integração entre RabbitMQ e Rebus em uma arquitetura orientada a eventos. O exemplo utiliza uma saga de pedidos para demonstrar o processamento assíncrono de mensagens, a correlação entre eventos, a persistência e a reidratação do estado no PostgreSQL, além do tratamento de falhas e do encaminhamento de mensagens para a fila de erro. O objetivo é tornar visíveis os principais conceitos e decisões envolvidos na implementação de processos distribuídos e de longa duração com .NET.
 
 ## Fluxo Saga
 
@@ -133,9 +133,14 @@ graph TD
 
 Se a sua mensagem foi parar na fila de error, você precisa ir no painel do seu broker (ou via CLI/Rebus Fleet Manager) para inspecionar o payload e o stack trace do erro gravado nos cabeçalhos (headers) dessa mensagem.
 
-## Build
+
+## Execução
 
 ```bash
-docker compose up -d --build
+git clone https://github.com/avmesquita/rabbitmq-rebus-study-case.git
+cd rabbitmq-rebus-study-case
+chmod +x start.sh
+./start.sh
 ```
+
 
