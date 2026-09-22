@@ -1,6 +1,7 @@
 # Ensaio de estudos do Rebus
 
 [![CI](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/ci.yml/badge.svg)](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/ci.yml)
+[![Documentação](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/pages.yml/badge.svg)](https://avmesquita.github.io/rabbitmq-rebus-study-case/)
  [![Abrir no GitHub Codespaces](https://img.shields.io/badge/Abrir%20no-GitHub%20Codespaces-181717?logo=github)](https://codespaces.new/avmesquita/rabbitmq-rebus-study-case?quickstart=1)
 ---
 
