@@ -1,4 +1,4 @@
-name: Publish documentation
+name: Pages
 
 on:
   push:
