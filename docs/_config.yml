@@ -1,0 +1,4 @@
+title: RabbitMQ Rebus Study Case
+description: Estudo de caso de processamento assíncrono com .NET, RabbitMQ, Rebus e PostgreSQL.
+theme: minima
+markdown: kramdown
