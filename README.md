@@ -1,7 +1,5 @@
 # Ensaio de estudos do Rebus
 
----
-
 [![CI](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/ci.yml/badge.svg)](https://github.com/avmesquita/rabbitmq-rebus-study-case/actions/workflows/ci.yml)
 
 ---
