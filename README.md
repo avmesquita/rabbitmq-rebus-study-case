@@ -1,6 +1,10 @@
 # Casos de Estudo RabbitMQ/Rebus
 
-## Fluxo
+## Abstract
+
+O objeto deste projeto é um estudo do uso do RabbitMQ com o Rebus.
+
+## Fluxo Saga
 
 Em arquiteturas orientadas a eventos usando Rebus com Sagas, a saga funciona como um Orquestrador de Estado Persistente. Ela é uma máquina de estados que reage a mensagens da fila, grava o progresso no banco e decide o que fazer a seguir.
 
@@ -72,7 +76,7 @@ sequenceDiagram
     Saga->>Banco: MarkAsComplete() (Deleta linha)
 ```    
 
-## Diagrama Top-Down
+### Diagrama Top-Down
 
 ```mermaid
 graph TD
@@ -128,4 +132,10 @@ graph TD
 * A tabela `rebus_sagas` é o bloco de notas do estado mantido no Banco.
 
 Se a sua mensagem foi parar na fila de error, você precisa ir no painel do seu broker (ou via CLI/Rebus Fleet Manager) para inspecionar o payload e o stack trace do erro gravado nos cabeçalhos (headers) dessa mensagem.
+
+## Build
+
+```bash
+docker compose up -d --build
+```
 

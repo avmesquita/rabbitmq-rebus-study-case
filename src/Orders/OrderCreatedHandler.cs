@@ -2,6 +2,8 @@ using System.Data;
 using Dapper;
 using Rebus.Handlers;
 
+namespace RebusExemplo.Orders;
+
 public class OrderCreatedHandler : IHandleMessages<OrderCreatedEvent>
 {
     private readonly IDbConnection _db;

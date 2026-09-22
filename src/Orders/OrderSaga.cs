@@ -3,6 +3,7 @@ using Rebus.Handlers;
 using Rebus.Sagas;
 using System.Data;
 
+namespace RebusExemplo.Orders;
 public class OrderSaga : Saga<OrderSagaData>,
     IAmInitiatedBy<OrderCreatedEvent>,
     IHandleMessages<PaymentReceivedEvent>
